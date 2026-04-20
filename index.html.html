@@ -1,0 +1,829 @@
+<!-- SHAREPOINT CONFERENCE ABSTRACT BUILDER - ULTRA COMPATIBLE VERSION -->
+<!-- Instructions for Implementation:
+1. Create a new SharePoint page
+2. Edit the page
+3. Add a "Script Editor" web part (or "Embed" web part in modern SharePoint)
+4. Click "Edit Snippet" and paste ALL of this code
+5. Save and publish the page
+-->
+
+<style>
+    .abstract-builder-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+    
+    .abstract-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+    
+    @media (max-width: 1200px) {
+        .abstract-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .abstract-panel {
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+    }
+    
+    .abstract-title {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+    
+    .abstract-subtitle {
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 14px;
+    }
+    
+    .abstract-section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .abstract-section:last-child {
+        border-bottom: none;
+    }
+    
+    .abstract-section-title {
+        color: #0078d4;
+        margin-bottom: 20px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+    }
+    
+    .abstract-section-number {
+        background: #0078d4;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .abstract-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    
+    .abstract-required {
+        color: #e74c3c;
+    }
+    
+    .abstract-input,
+    .abstract-textarea,
+    .abstract-select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+    }
+    
+    .abstract-input:focus,
+    .abstract-textarea:focus,
+    .abstract-select:focus {
+        outline: none;
+        border-color: #0078d4;
+        box-shadow: 0 0 0 1px #0078d4;
+    }
+    
+    .abstract-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .abstract-track-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        border-left: 4px solid #0078d4;
+    }
+    
+    .abstract-track-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .abstract-track-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .abstract-session-item {
+        background: white;
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        border: 1px solid #d0d0d0;
+    }
+    
+    .abstract-session-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .abstract-session-number {
+        background: #5c2d91;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .abstract-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        transition: all 0.2s;
+    }
+    
+    .abstract-btn-primary {
+        background: #0078d4;
+        color: white;
+    }
+    
+    .abstract-btn-primary:hover {
+        background: #106ebe;
+    }
+    
+    .abstract-btn-secondary {
+        background: #107c10;
+        color: white;
+    }
+    
+    .abstract-btn-secondary:hover {
+        background: #0e6b0e;
+    }
+    
+    .abstract-btn-danger {
+        background: #d13438;
+        color: white;
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+    
+    .abstract-btn-danger:hover {
+        background: #a72429;
+    }
+    
+    .abstract-btn-add {
+        background: #107c10;
+        color: white;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .abstract-btn-add:hover {
+        background: #0e6b0e;
+    }
+    
+    .abstract-button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .abstract-preview-panel {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .abstract-preview-content {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 6px;
+        font-family: 'Calibri', 'Times New Roman', serif;
+        line-height: 1.8;
+        font-size: 14px;
+        max-height: 600px;
+        overflow-y: auto;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    
+    .abstract-copy-btn {
+        width: 100%;
+        margin-top: 20px;
+    }
+    
+    .abstract-success-message {
+        background: #107c10;
+        color: white;
+        padding: 12px;
+        border-radius: 4px;
+        margin-top: 10px;
+        text-align: center;
+        display: none;
+    }
+    
+    .abstract-help-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: -10px;
+        margin-bottom: 15px;
+        font-style: italic;
+    }
+    
+    .abstract-track-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .abstract-track-controls .abstract-input {
+        flex: 1;
+        min-width: 200px;
+        margin-bottom: 0;
+    }
+    
+    .abstract-credits-info {
+        background: #e8f4f8;
+        padding: 15px;
+        border-radius: 6px;
+        border-left: 4px solid #0078d4;
+        margin-bottom: 20px;
+        font-size: 13px;
+    }
+    
+    .abstract-credits-info strong {
+        color: #0078d4;
+    }
+</style>
+
+<div class="abstract-builder-container">
+    <div class="abstract-grid">
+        <!-- Form Panel -->
+        <div class="abstract-panel">
+            <h1 class="abstract-title">📋 Conference Abstract Builder</h1>
+            <p class="abstract-subtitle">Fill in the details below to generate your formatted conference abstract</p>
+            
+            <!-- Program Overview Section -->
+            <div class="abstract-section">
+                <h2 class="abstract-section-title">
+                    <span class="abstract-section-number">1</span> Program Overview
+                </h2>
+                
+                <label class="abstract-label">Program Title <span class="abstract-required">*</span></label>
+                <input type="text" class="abstract-input" id="abstractProgramTitle" placeholder="e.g., 2025 SAGE Symposium: Advancing Animal Health...">
+                
+                <label class="abstract-label">Program Description <span class="abstract-required">*</span></label>
+                <textarea class="abstract-textarea" id="abstractProgramDescription" placeholder="Provide a comprehensive overview of your program..."></textarea>
+                <p class="abstract-help-text">Include the purpose, audience, and key themes of your conference</p>
+            </div>
+            
+            <!-- Learning Objectives Section -->
+            <div class="abstract-section">
+                <h2 class="abstract-section-title">
+                    <span class="abstract-section-number">2</span> Learning Objectives
+                </h2>
+                
+                <label class="abstract-label">Learning Objective 1 <span class="abstract-required">*</span></label>
+                <textarea class="abstract-textarea" id="abstractLearningObjective1" placeholder="First learning objective..." style="min-height: 80px;"></textarea>
+                
+                <label class="abstract-label">Learning Objective 2 <span class="abstract-required">*</span></label>
+                <textarea class="abstract-textarea" id="abstractLearningObjective2" placeholder="Second learning objective..." style="min-height: 80px;"></textarea>
+                
+                <label class="abstract-label">Learning Objective 3 <span class="abstract-required">*</span></label>
+                <textarea class="abstract-textarea" id="abstractLearningObjective3" placeholder="Third learning objective..." style="min-height: 80px;"></textarea>
+                
+                <p class="abstract-help-text">Provide 3 specific, measurable learning outcomes</p>
+            </div>
+            
+            <!-- Credits Section -->
+            <div class="abstract-section">
+                <h2 class="abstract-section-title">
+                    <span class="abstract-section-number">3</span> CE Credits
+                </h2>
+                
+                <div class="abstract-credits-info">
+                    <strong>💡 Tip:</strong> Calculate total hours based on your sessions. Medical credits are for clinical content, non-medical for management/business topics.
+                </div>
+                
+                <label class="abstract-label">Total Medical Credits (hours) <span class="abstract-required">*</span></label>
+                <input type="number" class="abstract-input" id="abstractMedicalCredits" placeholder="e.g., 22" step="0.5">
+                
+                <label class="abstract-label">Total Non-Medical Credits (hours) <span class="abstract-required">*</span></label>
+                <input type="number" class="abstract-input" id="abstractNonMedicalCredits" placeholder="e.g., 8" step="0.5">
+                
+                <label class="abstract-label">Maximum Credits Per Person (hours) <span class="abstract-required">*</span></label>
+                <input type="number" class="abstract-input" id="abstractMaxCredits" placeholder="e.g., 7" step="0.5">
+            </div>
+            
+            <!-- Tracks Section -->
+            <div class="abstract-section">
+                <h2 class="abstract-section-title">
+                    <span class="abstract-section-number">4</span> Tracks & Sessions
+                </h2>
+                
+                <div class="abstract-track-controls">
+                    <input type="text" class="abstract-input" id="abstractNewTrackName" placeholder="Track name (e.g., Technician Track)">
+                    <button type="button" class="abstract-btn abstract-btn-secondary" id="addTrackBtn">+ Add Track</button>
+                </div>
+                
+                <div id="abstractTracksContainer">
+                    <!-- Tracks will be added here dynamically -->
+                </div>
+            </div>
+            
+            <div class="abstract-button-group">
+                <button type="button" class="abstract-btn abstract-btn-primary" id="updatePreviewBtn" style="flex: 1;">🔄 Update Preview</button>
+                <button type="button" class="abstract-btn abstract-btn-danger" id="resetFormBtn">↺ Reset Form</button>
+            </div>
+        </div>
+        
+        <!-- Preview Panel -->
+        <div class="abstract-panel abstract-preview-panel">
+            <h1 class="abstract-title">👁️ Live Preview</h1>
+            <p class="abstract-subtitle">Your formatted abstract will appear here</p>
+            
+            <div id="abstractPreview" class="abstract-preview-content">
+                <em>Fill in the form on the left to see your abstract preview here...</em>
+            </div>
+            
+            <button class="abstract-btn abstract-btn-primary abstract-copy-btn" id="copyBtn">📋 Copy Abstract</button>
+            <div id="abstractSuccessMessage" class="abstract-success-message">✓ Copied to clipboard!</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+// Global variables - avoid namespace collisions
+var abstractTrackCounter = 0;
+var abstractUpdateTimeout;
+
+// Main functions
+function abstractAddTrack() {
+    try {
+        var trackName = document.getElementById('abstractNewTrackName').value;
+        if (!trackName || trackName.trim() === '') {
+            alert('Please enter a track name');
+            return;
+        }
+        trackName = trackName.trim();
+        
+        abstractTrackCounter = abstractTrackCounter + 1;
+        var trackId = 'abstract-track-' + abstractTrackCounter;
+        
+        // Create track container
+        var trackDiv = document.createElement('div');
+        trackDiv.className = 'abstract-track-section';
+        trackDiv.id = trackId;
+        
+        // Create header
+        var headerDiv = document.createElement('div');
+        headerDiv.className = 'abstract-track-header';
+        
+        var titleDiv = document.createElement('div');
+        titleDiv.className = 'abstract-track-title';
+        titleDiv.appendChild(document.createTextNode(trackName));
+        
+        var removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'abstract-btn abstract-btn-danger';
+        removeBtn.appendChild(document.createTextNode('Remove Track'));
+        removeBtn.setAttribute('data-track-id', trackId);
+        
+        headerDiv.appendChild(titleDiv);
+        headerDiv.appendChild(removeBtn);
+        
+        // Create sessions container
+        var sessionsDiv = document.createElement('div');
+        sessionsDiv.id = trackId + '-sessions';
+        
+        // Create add session button
+        var addSessionBtn = document.createElement('button');
+        addSessionBtn.type = 'button';
+        addSessionBtn.className = 'abstract-btn abstract-btn-add';
+        addSessionBtn.appendChild(document.createTextNode('+ Add Session'));
+        addSessionBtn.setAttribute('data-track-id', trackId);
+        addSessionBtn.setAttribute('data-track-name', trackName);
+        
+        // Assemble track
+        trackDiv.appendChild(headerDiv);
+        trackDiv.appendChild(sessionsDiv);
+        trackDiv.appendChild(addSessionBtn);
+        
+        // Add to container
+        document.getElementById('abstractTracksContainer').appendChild(trackDiv);
+        document.getElementById('abstractNewTrackName').value = '';
+        
+        // Add first session
+        abstractAddSession(trackId, trackName);
+        
+    } catch(e) {
+        alert('Error adding track: ' + e.message);
+    }
+}
+
+function abstractAddSession(trackId, trackName) {
+    try {
+        var sessionsContainer = document.getElementById(trackId + '-sessions');
+        if (!sessionsContainer) {
+            alert('Session container not found');
+            return;
+        }
+        
+        var sessionCount = sessionsContainer.childNodes.length + 1;
+        var sessionId = trackId + '-session-' + sessionCount;
+        
+        // Create session container
+        var sessionDiv = document.createElement('div');
+        sessionDiv.className = 'abstract-session-item';
+        sessionDiv.id = sessionId;
+        
+        // Create header
+        var headerDiv = document.createElement('div');
+        headerDiv.className = 'abstract-session-header';
+        
+        var sessionNumSpan = document.createElement('span');
+        sessionNumSpan.className = 'abstract-session-number';
+        sessionNumSpan.appendChild(document.createTextNode('Session ' + sessionCount));
+        
+        var removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'abstract-btn abstract-btn-danger';
+        removeBtn.appendChild(document.createTextNode('Remove'));
+        removeBtn.setAttribute('data-session-id', sessionId);
+        
+        headerDiv.appendChild(sessionNumSpan);
+        headerDiv.appendChild(removeBtn);
+        sessionDiv.appendChild(headerDiv);
+        
+        // Add fields
+        addSessionField(sessionDiv, 'Session Title', 'text', 'session-title', 'e.g., Common Oral Pathologies');
+        addSessionField(sessionDiv, 'Date & Time', 'text', 'session-datetime', 'e.g., 8:35a-9:25a');
+        addSessionField(sessionDiv, 'Session Length (minutes)', 'number', 'session-length', 'e.g., 50');
+        addSessionSelectField(sessionDiv);
+        addSessionField(sessionDiv, 'CE Credit Hours Requested', 'text', 'session-credits', 'e.g., 1 hour');
+        addSessionField(sessionDiv, 'Presenter Name & Credentials', 'text', 'session-presenter', 'e.g., John Doe, DVM, DACVIM');
+        addSessionTextareaField(sessionDiv, 'Session Description', 'session-description', 'Provide a detailed description...');
+        
+        sessionsContainer.appendChild(sessionDiv);
+        
+    } catch(e) {
+        alert('Error adding session: ' + e.message);
+    }
+}
+
+function addSessionField(container, labelText, inputType, className, placeholder) {
+    var label = document.createElement('label');
+    label.className = 'abstract-label';
+    label.innerHTML = labelText + ' <span class="abstract-required">*</span>';
+    
+    var input = document.createElement('input');
+    input.type = inputType;
+    input.className = 'abstract-input ' + className;
+    input.placeholder = placeholder;
+    if (inputType === 'number') {
+        input.setAttribute('step', '5');
+    }
+    
+    container.appendChild(label);
+    container.appendChild(input);
+}
+
+function addSessionSelectField(container) {
+    var label = document.createElement('label');
+    label.className = 'abstract-label';
+    label.innerHTML = 'CE Credit Type <span class="abstract-required">*</span>';
+    
+    var select = document.createElement('select');
+    select.className = 'abstract-select session-credit-type';
+    
+    var opt1 = document.createElement('option');
+    opt1.value = '';
+    opt1.appendChild(document.createTextNode('Select credit type...'));
+    
+    var opt2 = document.createElement('option');
+    opt2.value = 'medical';
+    opt2.appendChild(document.createTextNode('Medical'));
+    
+    var opt3 = document.createElement('option');
+    opt3.value = 'non-medical';
+    opt3.appendChild(document.createTextNode('Non-Medical'));
+    
+    select.appendChild(opt1);
+    select.appendChild(opt2);
+    select.appendChild(opt3);
+    
+    container.appendChild(label);
+    container.appendChild(select);
+}
+
+function addSessionTextareaField(container, labelText, className, placeholder) {
+    var label = document.createElement('label');
+    label.className = 'abstract-label';
+    label.innerHTML = labelText + ' <span class="abstract-required">*</span>';
+    
+    var textarea = document.createElement('textarea');
+    textarea.className = 'abstract-textarea ' + className;
+    textarea.placeholder = placeholder;
+    
+    container.appendChild(label);
+    container.appendChild(textarea);
+}
+
+function abstractGeneratePreview() {
+    try {
+        var programTitle = document.getElementById('abstractProgramTitle').value;
+        var programDescription = document.getElementById('abstractProgramDescription').value;
+        var learningObjective1 = document.getElementById('abstractLearningObjective1').value;
+        var learningObjective2 = document.getElementById('abstractLearningObjective2').value;
+        var learningObjective3 = document.getElementById('abstractLearningObjective3').value;
+        var medicalCredits = document.getElementById('abstractMedicalCredits').value;
+        var nonMedicalCredits = document.getElementById('abstractNonMedicalCredits').value;
+        var maxCredits = document.getElementById('abstractMaxCredits').value;
+        
+        var abstract = '';
+        
+        if (programTitle) {
+            abstract += '<strong>Program Title:</strong> ' + escapeHtml(programTitle) + '<br><br>';
+        }
+        
+        if (programDescription) {
+            abstract += '<strong>Program Description:</strong><br><br' + escapeHtml(programDescription) + '<br><br>';
+        }
+        
+        if (learningObjective1 || learningObjective2 || learningObjective3) {
+            abstract += '<strong>Learning Objectives</strong><br><br>';
+            abstract += 'Upon completion of this program, attendees will be able to:<br><br>';
+            
+            if (learningObjective1) {
+                abstract += '1. ' + escapeHtml(learningObjective1) + '<br><br>';
+            }
+            if (learningObjective2) {
+                abstract += '2. ' + escapeHtml(learningObjective2) + '<br><br>';
+            }
+            if (learningObjective3) {
+                abstract += '3. ' + escapeHtml(learningObjective3) + '<br><br>';
+            }
+        }
+        
+        if (medicalCredits || nonMedicalCredits) {
+            var totalCredits = (parseFloat(medicalCredits) || 0) + (parseFloat(nonMedicalCredits) || 0);
+            abstract += '<strong>Program Agenda:</strong><br><br>';
+            abstract += 'Total Program Credits Requested (' + totalCredits + '): <br>';
+            
+            if (medicalCredits) {
+                abstract += medicalCredits + ' hours of medical credits for veterinarians and technicians<br>';
+            }
+            if (nonMedicalCredits) {
+                abstract += nonMedicalCredits + ' hours of non-medical credits for veterinarians and technicians<br>';
+            }
+            if (maxCredits) {
+                abstract += 'With a maximum of ' + maxCredits + ' hours available for any one person<br>';
+            }
+            abstract += '<br>';
+        }
+        
+        // Process tracks
+        var tracks = document.getElementsByClassName('abstract-track-section');
+        for (var i = 0; i < tracks.length; i++) {
+            var track = tracks[i];
+            var trackTitle = track.getElementsByClassName('abstract-track-title')[0].textContent;
+            
+            // Add divider
+            if (i > 0) {
+                abstract += '<br>================================================================================<br><br>';
+            }
+            
+            abstract += '<strong>' + escapeHtml(trackTitle) + '</strong><br><br>';
+            
+            var sessions = track.getElementsByClassName('abstract-session-item');
+            for (var j = 0; j < sessions.length; j++) {
+                var session = sessions[j];
+                
+                var title = getInputValue(session, 'session-title');
+                var datetime = getInputValue(session, 'session-datetime');
+                var length = getInputValue(session, 'session-length');
+                var creditType = getSelectValue(session, 'session-credit-type');
+                var credits = getInputValue(session, 'session-credits');
+                var presenter = getInputValue(session, 'session-presenter');
+                var description = getTextareaValue(session, 'session-description');
+                
+                if (datetime && title) {
+                    abstract += escapeHtml(datetime) + ' ' + escapeHtml(title) + '<br>';
+                } else if (title) {
+                    abstract += escapeHtml(title) + '<br>';
+                }
+                
+                if (length) {
+                    abstract += 'Length of session: ' + escapeHtml(length) + ' minutes<br>';
+                }
+                if (creditType && credits) {
+                    abstract += 'CE Requested: ' + escapeHtml(credits) + ' of ' + escapeHtml(creditType) + '<br>';
+                }
+                if (presenter) {
+                    abstract += 'Presenter: ' + escapeHtml(presenter) + '<br>';
+                }
+                if (description) {
+                    abstract += 'Description: ' + escapeHtml(description) + '<br>';
+                }
+                
+                abstract += '<br>';
+            }
+        }
+        
+        document.getElementById('abstractPreview').innerHTML = abstract || '<em>Fill in the form to see your abstract preview...</em>';
+        
+    } catch(e) {
+        alert('Error generating preview: ' + e.message);
+    }
+}
+
+function getInputValue(container, className) {
+    var inputs = container.getElementsByClassName(className);
+    return inputs.length > 0 ? inputs[0].value : '';
+}
+
+function getSelectValue(container, className) {
+    var selects = container.getElementsByClassName(className);
+    return selects.length > 0 ? selects[0].value : '';
+}
+
+function getTextareaValue(container, className) {
+    var textareas = container.getElementsByClassName(className);
+    return textareas.length > 0 ? textareas[0].value : '';
+}
+
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+}
+
+function abstractCopyToClipboard() {
+    try {
+        var preview = document.getElementById('abstractPreview');
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = preview.innerHTML;
+        
+        // Replace <br> with newlines
+        var brs = tempDiv.getElementsByTagName('br');
+        while (brs.length > 0) {
+            var br = brs[0];
+            br.parentNode.replaceChild(document.createTextNode('\n'), br);
+        }
+        
+        // Replace <strong> tags
+        var strongs = tempDiv.getElementsByTagName('strong');
+        while (strongs.length > 0) {
+            var strong = strongs[0];
+            var textNode = document.createTextNode(strong.textContent);
+            strong.parentNode.replaceChild(textNode, strong);
+        }
+        
+        var previewText = tempDiv.textContent || tempDiv.innerText;
+        
+        if (!previewText || previewText.indexOf('Fill in the form') >= 0) {
+            alert('Please generate an abstract first!');
+            return;
+        }
+        
+        var textarea = document.createElement('textarea');
+        textarea.value = previewText;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            document.execCommand('copy');
+            var successMsg = document.getElementById('abstractSuccessMessage');
+            successMsg.style.display = 'block';
+            setTimeout(function() {
+                successMsg.style.display = 'none';
+            }, 3000);
+        } catch (err) {
+            alert('Failed to copy. Please select and copy manually.');
+        }
+        
+        document.body.removeChild(textarea);
+        
+    } catch(e) {
+        alert('Error copying: ' + e.message);
+    }
+}
+
+function abstractResetForm() {
+    if (confirm('Are you sure you want to reset the entire form?')) {
+        document.getElementById('abstractProgramTitle').value = '';
+        document.getElementById('abstractProgramDescription').value = '';
+        document.getElementById('abstractLearningObjective1').value = '';
+        document.getElementById('abstractLearningObjective2').value = '';
+        document.getElementById('abstractLearningObjective3').value = '';
+        document.getElementById('abstractMedicalCredits').value = '';
+        document.getElementById('abstractNonMedicalCredits').value = '';
+        document.getElementById('abstractMaxCredits').value = '';
+        document.getElementById('abstractTracksContainer').innerHTML = '';
+        document.getElementById('abstractPreview').innerHTML = '<em>Fill in the form on the left to see your abstract preview here...</em>';
+        abstractTrackCounter = 0;
+    }
+}
+
+function abstractDebouncedUpdate() {
+    clearTimeout(abstractUpdateTimeout);
+    abstractUpdateTimeout = setTimeout(abstractGeneratePreview, 500);
+}
+
+// Event delegation for dynamically created buttons
+document.getElementById('abstractTracksContainer').onclick = function(e) {
+    var target = e.target || e.srcElement;
+    
+    // Remove track
+    if (target.getAttribute('data-track-id') && target.textContent.indexOf('Remove Track') >= 0) {
+        var trackId = target.getAttribute('data-track-id');
+        if (confirm('Remove this track and all its sessions?')) {
+            var element = document.getElementById(trackId);
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+            abstractGeneratePreview();
+        }
+    }
+    
+    // Add session
+    if (target.getAttribute('data-track-id') && target.textContent.indexOf('Add Session') >= 0) {
+        var trackId = target.getAttribute('data-track-id');
+        var trackName = target.getAttribute('data-track-name');
+        abstractAddSession(trackId, trackName);
+    }
+    
+    // Remove session
+    if (target.getAttribute('data-session-id')) {
+        var sessionId = target.getAttribute('data-session-id');
+        if (confirm('Remove this session?')) {
+            var element = document.getElementById(sessionId);
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+            abstractGeneratePreview();
+        }
+    }
+};
+
+// Event listeners for form inputs (with debounce)
+document.getElementById('abstractProgramTitle').onkeyup = abstractDebouncedUpdate;
+document.getElementById('abstractProgramDescription').onkeyup = abstractDebouncedUpdate;
+document.getElementById('abstractLearningObjective1').onkeyup = abstractDebouncedUpdate;
+document.getElementById('abstractLearningObjective2').onkeyup = abstractDebouncedUpdate;
+document.getElementById('abstractLearningObjective3').onkeyup = abstractDebouncedUpdate;
+document.getElementById('abstractMedicalCredits').onchange = abstractDebouncedUpdate;
+document.getElementById('abstractNonMedicalCredits').onchange = abstractDebouncedUpdate;
+document.getElementById('abstractMaxCredits').onchange = abstractDebouncedUpdate;
+
+// Also listen to changes in the tracks container
+document.getElementById('abstractTracksContainer').onkeyup = abstractDebouncedUpdate;
+document.getElementById('abstractTracksContainer').onchange = abstractDebouncedUpdate;
+
+// Button event listeners
+document.getElementById('addTrackBtn').onclick = abstractAddTrack;
+document.getElementById('updatePreviewBtn').onclick = abstractGeneratePreview;
+document.getElementById('resetFormBtn').onclick = abstractResetForm;
+document.getElementById('copyBtn').onclick = abstractCopyToClipboard;
+</script>
